@@ -17,20 +17,14 @@ EXPOSE 8000
 
 ARG DEV=false
 RUN pip install --upgrade pip && \
+    apt-get update && apt-get install -y --no-install-recommends \
+        postgresql-client \
+    && \
     pip install -r /tmp/requirements.txt && \
     if [ "$DEV" = "true" ] ; then pip install -r /tmp/requirements.dev.txt ; fi && \
     # remove what's not needed anymore.
-    rm -rf /tmp && \
-    adduser --disabled-password --no-create-home ${DJANGO_USER}
-
-# RUN pip install --upgrade pip && \
-#     pip install -r /tmp/requirements.txt && \
-#     if [ "$DEV" = "true" ]; then \
-#         pip install -r /tmp/requirements.dev.txt; \
-#     fi && \
-#     rm -rf /tmp && \
-#     # Create a non-root user to run our application; quoted ${DJANGO_USER} to avoid shell issues.
-#     adduser --disabled-password --no-create-home "${DJANGO_USER}"
+    rm -rf /var/lib/apt/lists/* /tmp && \
+    useradd -M ${DJANGO_USER}
 
 USER ${DJANGO_USER}
 
