@@ -1,0 +1,77 @@
+# === Python ===
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
+env.bak/
+
+# === Django ===
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+
+# SQLite DB (remove if you commit your DB)
+db.sqlite3
+db.sqlite3-journal
+
+# Django static & media (generated)
+staticfiles/
+static/
+media/
+
+# Local environment variables
+.env
+.env.* 
+*.env
+
+# Django migration caches (optional: keep migrations!)
+# Uncomment if you DO NOT want to commit migrations
+# */migrations/
+# !*/migrations/__init__.py
+
+# === IDEs & Editors ===
+
+# VSCode
+.vscode/
+.code-workspace
+
+# PyCharm / JetBrains
+.idea/
+*.iml
+
+# === Bytecode / Build ===
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+*.egg
+
+# Coverage / testing
+.coverage
+coverage.xml
+*.cover
+*.py,cover
+.tox/
+pytest_cache/
+htmlcov/
+
+# === Docker ===
+# If using Docker, ignore local dev-only artifacts
+docker-compose.override.yml
+
+# === Node (if using React/Vue in project) ===
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# === macOS / Windows ===
+.DS_Store
+Thumbs.db

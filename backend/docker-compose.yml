@@ -1,0 +1,16 @@
+services:
+  api:
+    build:
+      context: .
+      # when DEV build arg is set to true, the Dockerfile will install dev dependencies
+      # this will override the default of false in the Dockerfile
+      args:
+        - DEV=true
+    ports:
+      - "8000:8000"
+    # live code reloading
+    volumes:
+      - .:/code
+    # we can override the default command with something else when running `docker compose run api <command>`
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8000"
