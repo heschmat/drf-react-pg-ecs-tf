@@ -9,4 +9,4 @@ exclude =
     manage.py
     settings.py
     */settings.py
-max-line-length = 88
+max-line-length = 100

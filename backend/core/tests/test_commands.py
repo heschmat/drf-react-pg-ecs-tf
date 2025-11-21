@@ -26,7 +26,7 @@ class CommandTests(SimpleTestCase):
         # default database refers to the database defined in settings.py
         patched_check.assert_called_once_with(databases=["default"])
 
-    @patch("time.sleep") # Mock time.sleep to avoid actual delay during tests
+    @patch("time.sleep")  # Mock time.sleep to avoid actual delay during tests
     def test_wait_for_db_delay(self, patched_sleep, patched_check):
         """Test waiting for database when getting OperationalError"""
         # Simulate OperationalError for the first five calls, then return True
