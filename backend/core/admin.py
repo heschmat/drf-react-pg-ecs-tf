@@ -15,7 +15,7 @@ class UserAdmin(BaseUserAdmin):
     # the fields need to match those defined in the custom user model (./core/models.py)
     fieldsets = (
         (None, {"fields": ("email", "password")}),
-        #(_("Personal Info"), {"fields": ("name",)}),
+        # (_("Personal Info"), {"fields": ("name",)}),
         (
             _("Permissions"),
             {
@@ -40,6 +40,7 @@ class UserAdmin(BaseUserAdmin):
             },
         ),
     )
+
 
 admin.site.register(models.User, UserAdmin)
 
