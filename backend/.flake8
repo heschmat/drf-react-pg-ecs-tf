@@ -5,7 +5,7 @@ exclude =
     env/,
     venv/,
     .venv/,
-    migrations/
+    */migrations/
     manage.py
     settings.py
     */settings.py
