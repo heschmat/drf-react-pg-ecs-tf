@@ -25,6 +25,7 @@ services:
       - DB_USER=user_dev
       - DB_PASS=ChangeMe123!
       - DB_PORT=5432
+      - DEBUG=1
   db:
     image: postgres:18
     environment:
