@@ -1,0 +1,41 @@
+FROM python:3.13-slim
+LABEL maintainer="/heschmatx"
+
+ARG DJANGO_USER=django-user
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# to give permission to write to EFS
+ARG UID=1001
+
+COPY ./requirements*.txt /tmp/.
+COPY ./scripts /scripts
+WORKDIR /code
+COPY . .
+
+EXPOSE 8000
+
+ARG DEV=false
+RUN pip install --upgrade pip && \
+    apt-get update && apt-get install -y --no-install-recommends \
+        postgresql-client \
+    && \
+    pip install -r /tmp/requirements.txt && \
+    rm -rf /var/lib/apt/lists/* /tmp && \
+    useradd -u ${UID} -M ${DJANGO_USER} && \
+    #mkdir -p /vol/web/media /vol/web/static && \
+    #chown -R ${DJANGO_USER}:${DJANGO_USER} /vol/web && \
+    #chmod 755 /vol/web && \
+    chmod -R +x /scripts
+
+# ENV PATH="/scripts:$PATH"
+#USER ${DJANGO_USER}
+
+# apparently, ECS requires to define the volumes in the Dockerfile:
+# media files are served via EFS; static files by volumes on ECS tasks.
+VOLUME /vol/web/media
+VOLUME /vol/web/static
+
+# CMD ["run.sh"]
+CMD ["/scripts/run.sh"]

@@ -28,7 +28,7 @@ media/
 
 # Local environment variables
 .env
-.env.* 
+#.env.* 
 *.env
 
 # Django migration caches (optional: keep migrations!)
