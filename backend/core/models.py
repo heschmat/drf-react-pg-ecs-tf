@@ -8,6 +8,9 @@ from django.contrib.auth.models import (
     PermissionsMixin,
 )
 
+from django.conf import settings
+from django.utils.text import slugify
+
 
 class UserManager(BaseUserManager):
     """Manager for custom user model"""
@@ -53,3 +56,47 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+# ================================================================= #
+# movies ========================================================== #
+
+class Genre(models.Model):
+    name = models.CharField(max_length=16, unique=True)
+    slug = models.CharField(max_length=16, unique=True, blank=True)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+
+class Movie(models.Model):
+    title = models.CharField(max_length=100, db_index=True)
+    description = models.TextField(blank=True)
+    release_year = models.PositiveSmallIntegerField()
+    poster = models.ImageField(upload_to='posters/', null=True, blank=True)
+
+    genres = models.ManyToManyField(Genre, related_name='movies')
+
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='movies_created'
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-release_year', 'title']
+    
+    def __str__(self):
+        return f'{self.title} - {self.release_year}'

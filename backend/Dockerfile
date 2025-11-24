@@ -24,7 +24,13 @@ RUN pip install --upgrade pip && \
     if [ "$DEV" = "true" ] ; then pip install -r /tmp/requirements.dev.txt ; fi && \
     # remove what's not needed anymore.
     rm -rf /var/lib/apt/lists/* /tmp && \
-    useradd -M ${DJANGO_USER}
+    useradd -M ${DJANGO_USER} && \
+    # create the folders after adding the user; so it's not under root.
+    mkdir -p /vol/web/media && \
+    mkdir -p /vol/web/static && \
+    chown -R ${DJANGO_USER}:${DJANGO_USER} /vol && \
+    chmod 755 /vol
+
 
 USER ${DJANGO_USER}
 

@@ -11,6 +11,7 @@ services:
     # live code reloading
     volumes:
       - .:/code
+      - static-data-dev:/vol/web
     # we can override the default command with something else when running `docker compose run api <command>`
     command: >
       sh -c "python manage.py wait_for_db &&
@@ -26,6 +27,8 @@ services:
       - DB_PASS=ChangeMe123!
       - DB_PORT=5432
       - DEBUG=1
+      - SECRET_KEY=${DJANGO_SECRET_KEY}
+      - ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
   db:
     image: postgres:18
     environment:
@@ -35,8 +38,9 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      # - postgres_data_dev:/var/lib/postgresql/data/
-      - postgres_data_dev:/var/lib/postgresql
+      # - postgres-data-dev:/var/lib/postgresql/data/
+      - postgres-data-dev:/var/lib/postgresql
 
 volumes:
-  postgres_data_dev:
+  postgres-data-dev:
+  static-data-dev:

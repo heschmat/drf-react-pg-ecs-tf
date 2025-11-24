@@ -44,4 +44,18 @@ class UserAdmin(BaseUserAdmin):
 
 admin.site.register(models.User, UserAdmin)
 
-# Register other models if any
+# movies ========================================================== #
+@admin.register(models.Genre)
+class GenreAdmin(admin.ModelAdmin):
+    list_display = ("name", "slug")
+    search_fields = ("name",)
+
+
+@admin.register(models.Movie)
+class MovieAdmin(admin.ModelAdmin):
+    list_display = ("title", "release_year", "created_by", "created_at")
+    list_filter = ("release_year", "genres")
+    search_fields = ("title",)
+    ordering = ("-release_year",)
+
+    filter_horizontal = ("genres",)
