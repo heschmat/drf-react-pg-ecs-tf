@@ -14,8 +14,6 @@ COPY ./scripts /scripts
 WORKDIR /code
 COPY . .
 
-EXPOSE 8000
-
 ARG DEV=false
 RUN pip install --upgrade pip && \
     apt-get update && apt-get install -y --no-install-recommends \
