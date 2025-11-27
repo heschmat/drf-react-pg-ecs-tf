@@ -6,6 +6,7 @@ services:
       - ./deploy:/tf-code/deploy
       # Mount your ~/.aws credentials
       - ~/.aws:/root/.aws:ro
+      # - ~/.ssh:/root/.ssh:ro
     working_dir: /tf-code
     environment:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
