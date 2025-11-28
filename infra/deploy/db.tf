@@ -17,11 +17,14 @@ resource "aws_security_group" "rds" {
   description = "Allow inbound Postgres traffic from private EC2 (and ECS later)"
 
   ingress {
-    description     = "Postgres from private EC2"
-    from_port       = 5432
-    to_port         = 5432
-    protocol        = "tcp"
-    security_groups = [aws_security_group.private_ec2_sg.id]
+    description = "Postgres from private EC2"
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    security_groups = [
+      aws_security_group.private_ec2_sg.id, # for test
+      aws_security_group.ecs_tasks.id
+    ]
   }
 
   # Outbound allowed (normal for RDS SG)

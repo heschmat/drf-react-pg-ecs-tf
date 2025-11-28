@@ -27,12 +27,10 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 DEBUG = os.environ.get('DEBUG', False)
 
 ALLOWED_HOSTS = []
-ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 ALLOWED_HOSTS = [h.strip() for h in ALLOWED_HOSTS if h.strip()]
 
-
 # Application definition
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -133,7 +131,7 @@ USE_TZ = True
 STATIC_URL = "static/static/"
 MEDIA_URL = "static/media/"
 
-STATIC_ROOT = "/vol/web/static"
+STATIC_ROOT = "/vol/web/static"  # collectstatic puts the files here
 MEDIA_ROOT = "/vol/web/media"
 
 # Default primary key field type

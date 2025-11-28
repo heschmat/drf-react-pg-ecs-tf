@@ -31,23 +31,18 @@ variable "db_password" {
   sensitive   = true
 }
 
-output "rds_endpoint" {
-  value = aws_db_instance.main.address
+variable "ecr_nginx_img_uri" {
+  default = "014571658325.dkr.ecr.us-east-1.amazonaws.com/movies-reviews-api-nginx:latest"
 }
 
-output "rds_port" {
-  value = aws_db_instance.main.port
+variable "ecr_api_img_uri" {
+  default = "014571658325.dkr.ecr.us-east-1.amazonaws.com/movies-reviews-api-api:latest"
 }
 
-output "rds_db_name" {
-  value = aws_db_instance.main.db_name
-}
-
-output "rds_security_group_id" {
-  value = aws_security_group.rds.id
-}
-
-output "rds_connection_string" {
-  value     = "postgres://${var.db_username}:${var.db_password}@${aws_db_instance.main.address}:${aws_db_instance.main.port}/${aws_db_instance.main.db_name}"
+variable "django_secret_key" {
+  description = "the key to securing signed data"
+  type        = string
+  # N.B. it is vital you keep this key secure, or attackers could use it to generate their own signed values.
+  # https://docs.djangoproject.com/en/5.2/topics/signing/
   sensitive = true
 }

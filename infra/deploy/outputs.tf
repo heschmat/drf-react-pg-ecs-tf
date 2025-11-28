@@ -48,3 +48,24 @@ output "private_security_group_id" {
   description = "ID of the private security group"
   value       = aws_security_group.private_sg.id
 }
+
+output "rds_endpoint" {
+  value = aws_db_instance.main.address
+}
+
+output "rds_port" {
+  value = aws_db_instance.main.port
+}
+
+output "rds_db_name" {
+  value = aws_db_instance.main.db_name
+}
+
+output "rds_security_group_id" {
+  value = aws_security_group.rds.id
+}
+
+output "rds_connection_string" {
+  value     = "postgres://${var.db_username}:${var.db_password}@${aws_db_instance.main.address}:${aws_db_instance.main.port}/${aws_db_instance.main.db_name}"
+  sensitive = true
+}
