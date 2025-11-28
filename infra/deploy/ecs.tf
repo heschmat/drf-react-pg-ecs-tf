@@ -140,9 +140,11 @@ resource "aws_security_group" "ecs_tasks" {
     protocol    = "tcp"
     description = "Allow inbound HTTP traffic"
 
-    cidr_blocks = ["0.0.0.0/0"] # for now, publically available on the internet.
+    # cidr_blocks = ["0.0.0.0/0"] # for now, publically available on the internet.
 
     # security_groups = [aws_security_group.private_sg.id] ## ?
+    security_groups = [aws_security_group.alb.id] # only accessible via alb
+    # Q: does it mean if you get access of load balancer, you can access ecs task?
   }
 
   egress {
@@ -212,21 +214,32 @@ resource "aws_ecs_service" "api" {
   desired_count   = 1
 
   # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform-fargate.html
-  launch_type      = "FARGATE"
+  launch_type = "FARGATE"
   # platform_version = "1.4.0"
   platform_version = "LATEST"
 
   enable_execute_command = true
 
   network_configuration {
-    # FOR TEST ONLY: allow public access
-    assign_public_ip = true
+    # # FOR TEST ONLY: allow public access
+    # assign_public_ip = true
+
+    # subnets = [
+    #   aws_subnet.public_1.id,
+    #   aws_subnet.public_2.id
+    # ]
 
     subnets = [
-      aws_subnet.public_1.id,
-      aws_subnet.public_2.id
+      aws_subnet.private_1.id,
+      aws_subnet.private_2.id
     ]
 
     security_groups = [aws_security_group.ecs_tasks.id]
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.api.arn
+    container_name   = "proxy"
+    container_port   = 8000
   }
 }

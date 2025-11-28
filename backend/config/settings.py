@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 import os
 from pathlib import Path
+from socket import gethostname, gethostbyname
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,6 +30,15 @@ DEBUG = os.environ.get('DEBUG', False)
 ALLOWED_HOSTS = []
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 ALLOWED_HOSTS = [h.strip() for h in ALLOWED_HOSTS if h.strip()]
+
+# Add container IP to ALLOWED_HOSTS when running in AWS ECS Fargate
+# ALB health checks hit the container using the IP address, so we need to allow that.
+if os.environ.get('AWS_EXECUTION_ENV') == 'AWS_ECS_FARGATE':
+    # print("+++ Running in AWS ECS Fargate - adding container IP to ALLOWED_HOSTS +++")
+    hostname = gethostname()
+    ip_address = gethostbyname(hostname) # the internal IP address of the container inside the AWS VPC
+    ALLOWED_HOSTS.append(ip_address)
+
 
 # Application definition
 INSTALLED_APPS = [

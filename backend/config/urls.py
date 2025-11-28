@@ -21,11 +21,15 @@ from django.conf import settings
 
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
+from core import views as core_views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # health check
+    path('api/healthz/', core_views.healthz),
     # api doc:
     path('api/schema/', SpectacularAPIView.as_view(), name='api-schema'),
-    path('api/docs', SpectacularSwaggerView.as_view(url_name='api-schema'), name='api-docs'),
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='api-schema'), name='api-docs'),
     # user:
     path('api/user/', include('user.urls')),
 

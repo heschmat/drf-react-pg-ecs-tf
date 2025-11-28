@@ -69,3 +69,7 @@ output "rds_connection_string" {
   value     = "postgres://${var.db_username}:${var.db_password}@${aws_db_instance.main.address}:${aws_db_instance.main.port}/${aws_db_instance.main.db_name}"
   sensitive = true
 }
+
+output "api_target_group_arn" {
+  value = aws_lb_target_group.api.arn
+}
