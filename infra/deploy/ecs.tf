@@ -151,10 +151,15 @@ resource "aws_security_group" "ecs_tasks" {
     from_port = 5432
     to_port   = 5432
     protocol  = "tcp"
-    cidr_blocks = [
-      aws_subnet.private_1.cidr_block,
-      aws_subnet.private_2.cidr_block,
-    ]
+    # ❌ The wrong pattern
+    # You allow ECS to talk to any resource in those subnets, not just RDS.
+    # It breaks least-privilege design and may fail compliance checks.
+    # It's unnecessary; RDS only accepts connections based on SG rules, not CIDR subnets.
+    # cidr_blocks = [
+    #   aws_subnet.private_1.cidr_block,
+    #   aws_subnet.private_2.cidr_block,
+    # ]
+    security_groups = [aws_security_group.rds.id] # do this instead of `cidr_blocks`
     description = "Allow outbound Postgres traffic to RDS"
   }
 
@@ -173,12 +178,13 @@ resource "aws_security_group" "ecs_tasks" {
   # NFS port for EFS volumes
   egress {
     from_port = 2049
-    to_port = 2049
-    protocol = "tcp"
-    cidr_blocks = [
-      aws_subnet.private_1.cidr_block,
-      aws_subnet.private_2.cidr_block,
-    ]
+    to_port   = 2049
+    protocol  = "tcp"
+    # cidr_blocks = [
+    #   aws_subnet.private_1.cidr_block,
+    #   aws_subnet.private_2.cidr_block,
+    # ]
+    security_groups = [aws_security_group.efs.id]
   }
 
 }
@@ -190,8 +196,8 @@ resource "aws_ecs_task_definition" "api" {
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc" # required for Fargate. Gives each task its own ENI (IP address).
 
-  cpu    = 512
-  memory = 1024
+  cpu    = 256
+  memory = 512
 
   # allows ECS to pull images from ECR & write logs to CloudWatch.
   execution_role_arn = aws_iam_role.ecs_execution_role.arn
@@ -209,12 +215,12 @@ resource "aws_ecs_task_definition" "api" {
   volume {
     name = "efs-media"
     efs_volume_configuration {
-      file_system_id = aws_efs_file_system.media.id
+      file_system_id     = aws_efs_file_system.media.id
       transit_encryption = "ENABLED"
 
       authorization_config {
         access_point_id = aws_efs_access_point.media_ap.id
-        iam = "DISABLED"
+        iam             = "DISABLED"
       }
     }
   }

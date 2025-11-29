@@ -22,7 +22,7 @@ resource "aws_security_group" "efs" {
     to_port   = 2049
     protocol  = "tcp"
 
-    security_groups = [aws_security_group.ecs_tasks.id]
+    security_groups = [aws_security_group.ecs_tasks.id] # ECS SG allowed to mount EFS
     description     = "Allow NFS access from ECS tasks"
   }
 }
