@@ -11,35 +11,36 @@ resource "aws_db_subnet_group" "main" {
   }
 }
 
-resource "aws_security_group" "rds" {
-  name        = "${local.prefix}-rds"
-  vpc_id      = aws_vpc.main.id
-  description = "Allow inbound Postgres traffic from private EC2 (and ECS later)"
+/* xxx security_groups.tf xxx
+# resource "aws_security_group" "rds" {
+#   name        = "${local.prefix}-rds"
+#   vpc_id      = aws_vpc.main.id
+#   description = "Allow inbound Postgres traffic from private EC2 (and ECS later)"
 
-  ingress {
-    description = "Postgres from private EC2"
-    from_port   = 5432
-    to_port     = 5432
-    protocol    = "tcp"
-    security_groups = [
-      aws_security_group.private_ec2_sg.id, # for test
-      aws_security_group.ecs_tasks.id
-    ]
-  }
+#   ingress {
+#     description = "Postgres from private EC2"
+#     from_port   = 5432
+#     to_port     = 5432
+#     protocol    = "tcp"
+#     security_groups = [
+#       aws_security_group.private_ec2_sg.id, # for test
+#       aws_security_group.ecs_tasks.id
+#     ]
+#   }
 
-  # Outbound allowed (normal for RDS SG)
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+#   # Outbound allowed (normal for RDS SG)
+#   egress {
+#     from_port   = 0
+#     to_port     = 0
+#     protocol    = "-1"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
 
-  tags = {
-    Name = "${local.prefix}-rds-sg"
-  }
-}
-
+#   tags = {
+#     Name = "${local.prefix}-rds-sg"
+#   }
+# }
+*/
 
 resource "aws_db_instance" "main" {
   identifier        = "${local.prefix}-db" # the resource name in the aws console

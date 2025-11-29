@@ -128,7 +128,7 @@ resource "aws_cloudwatch_log_group" "ecs_task_logs" {
 }
 
 # ========================== #
-
+/* xxx security_groups.tf xxx
 resource "aws_security_group" "ecs_tasks" {
   name        = "${local.prefix}-ecs-tasks-sg"
   description = "Access rules for the ECS service"
@@ -188,6 +188,7 @@ resource "aws_security_group" "ecs_tasks" {
   }
 
 }
+*/
 
 # ========================== #
 resource "aws_ecs_task_definition" "api" {

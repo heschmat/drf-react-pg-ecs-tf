@@ -13,6 +13,7 @@ resource "aws_efs_file_system" "media" {
 
 }
 
+/* xxx security_groups.tf xxx
 resource "aws_security_group" "efs" {
   name   = "${local.prefix}-efs"
   vpc_id = aws_vpc.main.id
@@ -26,14 +27,15 @@ resource "aws_security_group" "efs" {
     description     = "Allow NFS access from ECS tasks"
   }
 }
-
+*/
 
 # In Amazon EFS, a mount target is essentially a network endpoint in a specific subnet
 # that allows resources in that Availability Zone to mount (connect to) your EFS file system.
 # EFS is a regional service (one file system spans multiple AZs),
 # but EC2 instances connect to it through mount targets, which are AZ-specific Elastic Network Interfaces (ENIs).
 resource "aws_efs_mount_target" "this" {
-  for_each        = toset(local.private_subnet_ids)
+  # for_each = toset(local.private_subnet_ids)
+  for_each        = local.private_subnet_map
   file_system_id  = aws_efs_file_system.media.id
   subnet_id       = each.value
   security_groups = [aws_security_group.efs.id]

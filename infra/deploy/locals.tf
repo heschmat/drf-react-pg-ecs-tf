@@ -1,9 +1,22 @@
+# locals {
+#   private_subnet_ids = [
+#     aws_subnet.private_1.id,
+#     aws_subnet.private_2.id,
+#   ]
+# }
+
+# N.B. 💡 Terraform requires `for_each` keys to be known during plan.
+# In the code above, the subnet IDs are unknown until apply (because they are resource attributes).
+# Bellow, the keys (private_1, private_2) are known at plan time.
+# Terraform is totally fine as long as the keys are known — values may be unknown.
+
 locals {
-  private_subnet_ids = [
-    aws_subnet.private_1.id,
-    aws_subnet.private_2.id,
-  ]
+  private_subnet_map = {
+    private_1 = aws_subnet.private_1.id
+    private_2 = aws_subnet.private_2.id
+  }
 }
+
 
 
 /*
@@ -53,9 +66,9 @@ locals {
           readOnly      = true
         },
         {
-          sourceVolume = "efs-media"
+          sourceVolume  = "efs-media"
           containerPath = "/vol/media" # ditto
-          readOnly = true
+          readOnly      = true
         }
       ]
 
@@ -96,7 +109,7 @@ locals {
           readOnly      = false
         },
         {
-          sourceVolume  = "efs-media" # defined in `aws_ecs_task_definition`
+          sourceVolume  = "efs-media"      # defined in `aws_ecs_task_definition`
           containerPath = "/vol/web/media" # where media files are stored (see MEDIA_ROOT in settings.py)
           readOnly      = false
         }
