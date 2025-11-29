@@ -1,3 +1,11 @@
+locals {
+  private_subnet_ids = [
+    aws_subnet.private_1.id,
+    aws_subnet.private_2.id,
+  ]
+}
+
+
 /*
 
                        Fargate Task (mini-VM + ENI)
@@ -41,8 +49,13 @@ locals {
       mountPoints = [
         {
           sourceVolume  = "static"
-          containerPath = "/vol/static"
+          containerPath = "/vol/static" # should match the values in `default.conf.tpl`
           readOnly      = true
+        },
+        {
+          sourceVolume = "efs-media"
+          containerPath = "/vol/media" # ditto
+          readOnly = true
         }
       ]
 
@@ -82,11 +95,11 @@ locals {
           containerPath = "/vol/web/static"
           readOnly      = false
         },
-        # {
-        #   sourceVolume  = "efs-media"
-        #   containerPath = "/vol/web/media" # where media files are stored (see MEDIA_ROOT in settings.py)
-        #   readOnly      = false
-        # }
+        {
+          sourceVolume  = "efs-media" # defined in `aws_ecs_task_definition`
+          containerPath = "/vol/web/media" # where media files are stored (see MEDIA_ROOT in settings.py)
+          readOnly      = false
+        }
       ]
 
       logConfiguration = {

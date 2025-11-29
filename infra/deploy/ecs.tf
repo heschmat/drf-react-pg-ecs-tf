@@ -170,6 +170,17 @@ resource "aws_security_group" "ecs_tasks" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # NFS port for EFS volumes
+  egress {
+    from_port = 2049
+    to_port = 2049
+    protocol = "tcp"
+    cidr_blocks = [
+      aws_subnet.private_1.cidr_block,
+      aws_subnet.private_2.cidr_block,
+    ]
+  }
+
 }
 
 # ========================== #
@@ -193,6 +204,19 @@ resource "aws_ecs_task_definition" "api" {
   # N.B. No host path means an empty ephemeral volume stored in the Fargate task.
   volume {
     name = "static"
+  }
+
+  volume {
+    name = "efs-media"
+    efs_volume_configuration {
+      file_system_id = aws_efs_file_system.media.id
+      transit_encryption = "ENABLED"
+
+      authorization_config {
+        access_point_id = aws_efs_access_point.media_ap.id
+        iam = "DISABLED"
+      }
+    }
   }
 
   runtime_platform {
