@@ -39,6 +39,7 @@ resource "aws_iam_policy" "ecs_secrets_policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_secrets_attach" {
-  role       = aws_iam_role.ecs_task_role.name
+  # role       = aws_iam_role.ecs_task_role.name
+  role = aws_iam_role.ecs_execution_role.name
   policy_arn = aws_iam_policy.ecs_secrets_policy.arn
 }
