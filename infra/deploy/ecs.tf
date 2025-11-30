@@ -67,7 +67,7 @@ resource "aws_iam_role_policy_attachment" "ecs_exec_attach_managed" {
 # ========================== #
 
 resource "aws_iam_role" "ecs_task_role" {
-  name               = "myAppTaskRole"
+  name               = "${local.prefix}-myAppTaskRole"
   assume_role_policy = file("./templates/ecs/task-trust-policy.json")
 }
 

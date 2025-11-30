@@ -9,7 +9,10 @@ services:
       # - ~/.ssh:/root/.ssh:ro
     working_dir: /tf-code
     environment:
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - AWS_DEFAULT_REGION=${AWS_REGION}
-      - TF_WORKSPACE=${TF_WORKSPACE}
+      # The :- operator tells Compose: If the variable isn't set, use an empty string quietly.
+      # hence, no warning like:
+      # WARN[0000] The "TF_WORKSPACE" variable is not set. Defaulting to a blank string.
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-}
+      - AWS_DEFAULT_REGION=${AWS_REGION:-}
+      - TF_WORKSPACE=${TF_WORKSPACE:-}

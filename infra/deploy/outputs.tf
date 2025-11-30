@@ -49,6 +49,8 @@ output "private_security_group_id" {
   value       = aws_security_group.private_sg.id
 }
 
+# rds =================== #
+
 output "rds_endpoint" {
   value = aws_db_instance.main.address
 }
@@ -70,6 +72,57 @@ output "rds_connection_string" {
   sensitive = true
 }
 
-output "api_target_group_arn" {
-  value = aws_lb_target_group.api.arn
+# ecs =================== #
+# ECS Cluster Name
+output "ecs_cluster_name" {
+  description = "The name of the ECS cluster"
+  value       = aws_ecs_cluster.main.name
+}
+
+# ECS Service Name
+output "ecs_service_name" {
+  description = "The name of the ECS service"
+  value       = aws_ecs_service.api.name
+}
+
+# ECS Task Definition ARN (Fargate task IDs are dynamic, so we usually reference the task definition)
+output "ecs_task_definition_arn" {
+  description = "The ARN of the ECS task definition"
+  value       = aws_ecs_task_definition.api.arn
+}
+
+# alb =================== #
+output "alb_id" {
+  description = "The ID of the Application Load Balancer"
+  value       = aws_lb.api.id
+}
+
+output "alb_arn" {
+  description = "The ARN of the Application Load Balancer"
+  value       = aws_lb.api.arn
+}
+
+output "alb_dns_name" {
+  description = "The DNS name of the Application Load Balancer"
+  value       = aws_lb.api.dns_name
+}
+
+output "alb_security_group_id" {
+  description = "The ID of the security group attached to the ALB"
+  value       = aws_security_group.alb.id
+}
+
+output "alb_target_group_arn" {
+  description = "The ARN of the ALB target group"
+  value       = aws_lb_target_group.api.arn
+}
+
+output "alb_target_group_name" {
+  description = "The name of the ALB target group"
+  value       = aws_lb_target_group.api.name
+}
+
+output "alb_listener_arn" {
+  description = "The ARN of the ALB listener"
+  value       = aws_lb_listener.api.arn
 }
