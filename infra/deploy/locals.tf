@@ -97,10 +97,21 @@ locals {
         { name = "DB_NAME", value = aws_db_instance.main.db_name },
         { name = "DB_PORT", value = "5432" },
         { name = "DB_USER", value = aws_db_instance.main.username },
-        { name = "DB_PASS", value = aws_db_instance.main.password },
-        { name = "SECRET_KEY", value = var.django_secret_key },
+        # { name = "DB_PASS", value = aws_db_instance.main.password },
+        # { name = "SECRET_KEY", value = var.django_secret_key },
         { name = "ALLOWED_HOSTS", value = "*" },
       ]
+
+      secrets = [
+      {
+        name      = "DB_PASS"
+        valueFrom = aws_secretsmanager_secret.db_password.arn
+      },
+      {
+        name      = "SECRET_KEY"
+        valueFrom = aws_secretsmanager_secret.django_secret_key.arn
+      }
+    ]
 
       mountPoints = [
         {
