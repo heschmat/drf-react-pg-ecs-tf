@@ -1,0 +1,31 @@
+name: test and lint
+
+on:
+  workflow_call:
+    
+jobs:
+  python:
+    name: python
+    runs-on: ubuntu
+    steps:
+      - uses: actions/checkout@v4
+      - name: test
+        run: |
+          cd backend
+          docker compose run --rm api sh -c "python manage.py wait_for_db && python manage.py test"
+      - name: flake8
+        run: cd backend && docker compose run --rm api flake8
+  terraform:
+    name: terraform
+    runs-on: ubuntu
+    steps:
+      - uses: actions/checkout@v4
+      - name: terraform format & validation
+        run: |
+          cd infra
+          docker compose run --rm tf -chdir=setup init -backend=false
+          docker compose run --rm tf -chdir=deploy init -backend=false
+          docker compose run --rm tf -chdir=setup fmt -check
+          docker compose run --rm tf -chdir=deploy fmt -check
+          docker compose run --rm tf -chdir=setup validate
+          docker compose run --rm tf -chdir=deploy validate

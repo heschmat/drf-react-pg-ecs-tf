@@ -103,15 +103,15 @@ locals {
       ]
 
       secrets = [
-      {
-        name      = "DB_PASS"
-        valueFrom = aws_secretsmanager_secret.db_password.arn
-      },
-      {
-        name      = "SECRET_KEY"
-        valueFrom = aws_secretsmanager_secret.django_secret_key.arn
-      }
-    ]
+        {
+          name      = "DB_PASS"
+          valueFrom = aws_secretsmanager_secret.db_password.arn
+        },
+        {
+          name      = "SECRET_KEY"
+          valueFrom = aws_secretsmanager_secret.django_secret_key.arn
+        }
+      ]
 
       mountPoints = [
         {

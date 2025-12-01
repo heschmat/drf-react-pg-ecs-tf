@@ -1,0 +1,11 @@
+name: checks
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test-lint:
+    name: test & lint
+    uses: ./.github/workflows/test-lint.yml

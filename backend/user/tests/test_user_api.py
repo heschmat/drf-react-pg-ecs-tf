@@ -88,12 +88,12 @@ class PublicUserAPITests(TestCase):
 
     def test_unauthenticated_user_cannot_view_profile(self):
         res = self.client.get(urls['profile'])
-        # self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+        # self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
 
 class AuthenticatedUserAPITests(TestCase):
-    
+
     def setUp(self):
         self.user = get_user_model().objects.create_user(
             email='user1@example.com',
@@ -108,9 +108,9 @@ class AuthenticatedUserAPITests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, {'email': self.user.email})
-    
+
     def test_post_method_not_allowed_on_profile(self):
-        res = self.client.post(urls['profile'], data= {})
+        res = self.client.post(urls['profile'], data={})
 
         self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 

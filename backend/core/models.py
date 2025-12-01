@@ -60,6 +60,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 # ================================================================= #
 # movies ========================================================== #
 
+
 class Genre(models.Model):
     name = models.CharField(max_length=16, unique=True)
     slug = models.CharField(max_length=16, unique=True, blank=True)
@@ -69,7 +70,7 @@ class Genre(models.Model):
 
     def __str__(self):
         return self.name
-    
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
@@ -97,6 +98,6 @@ class Movie(models.Model):
 
     class Meta:
         ordering = ['-release_year', 'title']
-    
+
     def __str__(self):
         return f'{self.title} - {self.release_year}'

@@ -18,7 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
     # NOTE: UserSerializer.create() calls UserManager.create_user(); define in ./core/models.py
     def create(self, validated_data):
         return get_user_model().objects.create_user(**validated_data)
-    
+
     def update(self, instance, validated_data):
         password = validated_data.pop('password', None)
         user = super().update(instance, validated_data)
@@ -50,4 +50,3 @@ class AuthTokenSerializer(serializers.Serializer):
 
         attr['user'] = user
         return attr
-

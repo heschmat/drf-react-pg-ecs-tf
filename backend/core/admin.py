@@ -44,6 +44,7 @@ class UserAdmin(BaseUserAdmin):
 
 admin.site.register(models.User, UserAdmin)
 
+
 # movies ========================================================== #
 @admin.register(models.Genre)
 class GenreAdmin(admin.ModelAdmin):

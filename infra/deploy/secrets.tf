@@ -20,7 +20,7 @@ resource "aws_secretsmanager_secret_version" "django_secret_key" {
 
 # IAM ============================ #
 resource "aws_iam_policy" "ecs_secrets_policy" {
-  name   = "${local.prefix}-ecs-secrets-policy"
+  name = "${local.prefix}-ecs-secrets-policy"
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -40,6 +40,6 @@ resource "aws_iam_policy" "ecs_secrets_policy" {
 
 resource "aws_iam_role_policy_attachment" "ecs_secrets_attach" {
   # role       = aws_iam_role.ecs_task_role.name
-  role = aws_iam_role.ecs_execution_role.name
+  role       = aws_iam_role.ecs_execution_role.name
   policy_arn = aws_iam_policy.ecs_secrets_policy.arn
 }

@@ -23,7 +23,7 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
     # before returning the result to the API
     def get_object(self):
         return self.request.user
-    
+
 
 class CreateTokenView(ObtainAuthToken):
     serializer_class = AuthTokenSerializer
