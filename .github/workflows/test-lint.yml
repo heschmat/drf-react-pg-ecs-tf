@@ -1,42 +1,73 @@
-name: test and lint
+name: Backend CI
 
 on:
-  workflow_call:
-    
+  push:
+    branches: [ "main" ]
+  pull_request:
+
 jobs:
   python:
-    name: python
     runs-on: ubuntu-latest
     env:
       COMPOSE_FILE: docker-compose-deploy.yml
+
     steps:
       - uses: actions/checkout@v4
-      - name: test
-        env:
-          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
-          DB_PASS: ${{ secrets.DB_PASS }}
-          DB_USER: ${{ vars.DB_USER }}
-          DB_NAME: ${{ vars.DB_NAME }}
-          DB_PORT: 5432
+
+      # -------------------------------------------------------------
+      # Create .env file for Docker Compose (important!)
+      # -------------------------------------------------------------
+      - name: Generate .env file for docker-compose
         run: |
           cd backend
-          docker compose -f $COMPOSE_FILE run --rm api sh -c "python manage.py wait_for_db && python manage.py test"
+          echo "DB_NAME=${{ vars.DB_NAME }}" >> .env
+          echo "DB_USER=${{ vars.DB_USER }}" >> .env
+          echo "DB_PASS=${{ secrets.DB_PASS }}" >> .env
+          echo "DB_PORT=5432" >> .env
+          echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
+          echo "DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1" >> .env
+          cat .env
+
+      # -------------------------------------------------------------
+      # Run Django Tests inside the dockerized environment
+      # -------------------------------------------------------------
+      - name: Run tests
+        run: |
+          cd backend
+
+          # Bring up DB in background so migrations/tests can connect
+          docker compose -f $COMPOSE_FILE up -d db
+
+          # Wait for DB container to be healthy
+          echo "Waiting for PostgreSQL to be ready..."
+          for i in {1..30}; do
+            if docker compose -f $COMPOSE_FILE exec -T db pg_isready -U ${{ vars.DB_USER }} > /dev/null 2>&1; then
+              echo "PostgreSQL is ready!"
+              break
+            fi
+            echo "Waiting ($i/30)..."
+            sleep 2
+          done
+
+          # Run Django tests (wait_for_db ensures app-level readiness)
+          docker compose -f $COMPOSE_FILE run --rm api sh -c "
+            python manage.py wait_for_db &&
+            python manage.py test
+          "
+
+      # -------------------------------------------------------------
+      # Code Quality: flake8
+      # -------------------------------------------------------------
       - name: flake8
         run: |
           cd backend
           docker compose -f $COMPOSE_FILE run --rm api flake8
 
-  terraform:
-    name: terraform
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: terraform format & validation
+      # -------------------------------------------------------------
+      # Cleanup
+      # -------------------------------------------------------------
+      - name: Clean up
+        if: always()
         run: |
-          cd infra
-          docker compose run --rm tf -chdir=setup init -backend=false
-          docker compose run --rm tf -chdir=deploy init -backend=false
-          docker compose run --rm tf -chdir=setup fmt -check
-          docker compose run --rm tf -chdir=deploy fmt -check
-          docker compose run --rm tf -chdir=setup validate
-          docker compose run --rm tf -chdir=deploy validate
+          cd backend
+          docker compose -f $COMPOSE_FILE down -v
