@@ -29,16 +29,14 @@ jobs:
   terraform:
     name: terraform
     runs-on: ubuntu-latest
-    env:
-      COMPOSE_FILE: docker-compose-deploy.yaml
     steps:
       - uses: actions/checkout@v4
       - name: terraform format & validation
         run: |
           cd infra
-          docker compose -f $COMPOSE_FILE run --rm tf -chdir=setup init -backend=false
-          docker compose -f $COMPOSE_FILE run --rm tf -chdir=deploy init -backend=false
-          docker compose -f $COMPOSE_FILE run --rm tf -chdir=setup fmt -check
-          docker compose -f $COMPOSE_FILE run --rm tf -chdir=deploy fmt -check
-          docker compose -f $COMPOSE_FILE run --rm tf -chdir=setup validate
-          docker compose -f $COMPOSE_FILE run --rm tf -chdir=deploy validate
+          docker compose run --rm tf -chdir=setup init -backend=false
+          docker compose run --rm tf -chdir=deploy init -backend=false
+          docker compose run --rm tf -chdir=setup fmt -check
+          docker compose run --rm tf -chdir=deploy fmt -check
+          docker compose run --rm tf -chdir=setup validate
+          docker compose run --rm tf -chdir=deploy validate
