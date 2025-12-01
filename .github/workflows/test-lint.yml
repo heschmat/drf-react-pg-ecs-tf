@@ -6,7 +6,7 @@ on:
 jobs:
   python:
     name: python
-    runs-on: ubuntu
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: test
@@ -17,7 +17,7 @@ jobs:
         run: cd backend && docker compose run --rm api flake8
   terraform:
     name: terraform
-    runs-on: ubuntu
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: terraform format & validation
