@@ -8,7 +8,7 @@ jobs:
     name: python
     runs-on: ubuntu-latest
     env:
-      COMPOSE_FILE: docker-compose-deploy.yaml
+      COMPOSE_FILE: docker-compose-deploy.yml
     steps:
       - uses: actions/checkout@v4
       - name: test
