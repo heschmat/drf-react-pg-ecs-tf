@@ -1,15 +1,13 @@
 name: Backend CI
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
+  workflow_call:
 
 jobs:
   python:
     runs-on: ubuntu-latest
     env:
-      COMPOSE_FILE: docker-compose-deploy.yml
+      COMPOSE_FILE: docker-compose.yml
 
     steps:
       - uses: actions/checkout@v4
@@ -71,3 +69,17 @@ jobs:
         run: |
           cd backend
           docker compose -f $COMPOSE_FILE down -v
+  terraform:
+    name: terraform
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: terraform format & validation
+        run: |
+          cd infra
+          docker compose run --rm tf -chdir=setup init -backend=false
+          docker compose run --rm tf -chdir=deploy init -backend=false
+          docker compose run --rm tf -chdir=setup fmt -check
+          docker compose run --rm tf -chdir=deploy fmt -check
+          docker compose run --rm tf -chdir=setup validate
+          docker compose run --rm tf -chdir=deploy validate
