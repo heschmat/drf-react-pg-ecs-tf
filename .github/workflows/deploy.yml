@@ -10,6 +10,12 @@ jobs:
   test-lint:
     name: test & lint
     uses: ./.github/workflows/test-lint.yml
+    secrets:
+      DB_PASS: ${{ secrets.DB_PASS }}
+      DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY}}
+    with:
+      DB_NAME: ${{ vars.DB_NAME }}
+      DB_USER: ${{ vars.DB_USER }}
   deploy:
     name: deploy infra
     runs-on: ubuntu-latest
@@ -39,14 +45,24 @@ jobs:
         env:
           ECR_REPO_API: ${{ vars.ECR_REPO_API }}
           ECR_REPO_PROXY: ${{ vars.ECR_REPO_PROXY }}
+          SHA: ${{ github.sha }}
         run: |
           cd backend
           # docker build -t $ECR_REPO_API:$GITHUB_SHA backend -f backend/Dockerfile
-          docker build -t $ECR_REPO_API:$GITHUB_SHA -f Dockerfile.prod .
-          docker push $ECR_REPO_API:$GITHUB_SHA
+          docker build -t $ECR_REPO_API:$SHA -f Dockerfile.prod .
+          docker push $ECR_REPO_API:$SHA
 
-          docker build -t $ECR_REPO_PROXY:$GITHUB_SHA -f ./proxy/Dockerfile ./proxy
-          docker push $ECR_REPO_PROXY:$GITHUB_SHA
+          docker build -t $ECR_REPO_PROXY:$SHA -f ./proxy/Dockerfile ./proxy
+          docker push $ECR_REPO_PROXY:$SHA
+          
+      - name: Debug image names
+        env:
+          SHA: ${{ github.sha }}
+        run: |
+          echo "API:   '${{ vars.ECR_REPO_API }}:$SHA'"
+          echo "PROXY: '${{ vars.ECR_REPO_PROXY }}:$SHA'"
+          echo "gha-proxy: '${{ vars.ECR_REPO_PROXY }}'"
+          echo "gha-api:   '${{ vars.ECR_REPO_API }}'"
 
       - name: terraform apply
         env:
@@ -56,8 +72,8 @@ jobs:
           TF_VAR_db_password: ${{ secrets.DB_PASS }}
           TF_VAR_db_username: ${{ vars.DB_USER }}
           TF_VAR_django_secret_key: ${{ secrets.django_secret_key }}
-          TF_VAR_ecr_nginx_img_uri: ${{ vars.ECR_REPO_PROXY }}:$GITHUB_SHA
-          TF_VAR_ecr_api_img_uri: ${{ vars.ECR_REPO_API }}:$GITHUB_SHA
+          TF_VAR_ecr_nginx_img_uri: "${{ vars.ECR_REPO_PROXY }}:${{ github.sha }}"
+          TF_VAR_ecr_api_img_uri: "${{ vars.ECR_REPO_API }}:${{ github.sha }}"
           TF_WORKSPACE: ${{ env.TF_WORKSPACE }}
         run: |
           cd infra

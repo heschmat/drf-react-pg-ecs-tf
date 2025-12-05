@@ -9,3 +9,9 @@ jobs:
   test-lint:
     name: test & lint
     uses: ./.github/workflows/test-lint.yml
+    secrets:
+      DB_PASS: ${{ secrets.DB_PASS }}
+      DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY}}
+    with:
+      DB_NAME: ${{ vars.DB_NAME }}
+      DB_USER: ${{ vars.DB_USER }}

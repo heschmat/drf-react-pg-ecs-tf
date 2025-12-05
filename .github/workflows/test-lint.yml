@@ -2,6 +2,18 @@ name: Backend CI
 
 on:
   workflow_call:
+    inputs:
+      DB_NAME:
+        required: true
+        type: string
+      DB_USER:
+        required: true
+        type: string
+    secrets:
+      DB_PASS:
+        required: true
+      DJANGO_SECRET_KEY:
+        required: true
 
 jobs:
   python:
@@ -18,13 +30,13 @@ jobs:
       - name: Generate .env file for docker-compose
         run: |
           cd backend
-          echo "DB_NAME=${{ vars.DB_NAME }}" >> .env
-          echo "DB_USER=${{ vars.DB_USER }}" >> .env
-          echo "DB_PASS=${{ secrets.DB_PASS }}" >> .env
+          echo "DB_NAME=${{ inputs.DB_NAME }}" >> .env
+          echo "DB_USER=${{ inputs.DB_USER }}" >> .env
           echo "DB_PORT=5432" >> .env
+          echo "DB_PASS=${{ secrets.DB_PASS }}" >> .env
           echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
-          echo "DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1" >> .env
-          cat .env
+          cat .env | grep -vi "pass"
+
 
       # -------------------------------------------------------------
       # Run Django Tests inside the dockerized environment
@@ -74,12 +86,39 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: terraform format & validation
         run: |
           cd infra
           docker compose run --rm tf -chdir=setup init -backend=false
           docker compose run --rm tf -chdir=deploy init -backend=false
-          docker compose run --rm tf -chdir=setup fmt -check
-          docker compose run --rm tf -chdir=deploy fmt -check
+
+          echo "🔍 Checking Terraform formatting..."
+          set +e
+
+          # Check setup
+          FMT_SETUP=$(docker compose run --rm tf -chdir=setup fmt -check -diff)
+          EXIT_SETUP=$?
+
+          # Check deploy
+          FMT_DEPLOY=$(docker compose run --rm tf -chdir=deploy fmt -check -diff)
+          EXIT_DEPLOY=$?
+
+          set -e
+
+          if [ $EXIT_SETUP -ne 0 ] || [ $EXIT_DEPLOY -ne 0 ]; then
+            echo "❌ Terraform formatting issues detected:"
+            [ $EXIT_SETUP -ne 0 ] && echo "--- setup/ ---" && echo "$FMT_SETUP"
+            [ $EXIT_DEPLOY -ne 0 ] && echo "--- deploy/ ---" && echo "$FMT_DEPLOY"
+            echo
+            echo "💡 Fix this by running:"
+            echo "    docker compose run --rm tf -chdir=setup fmt"
+            echo "    docker compose run --rm tf -chdir=deploy fmt"
+            exit 1
+          else
+            echo "✅ Terraform files are properly formatted."
+          fi
+
+          echo "🔍 Running terraform validate..."
           docker compose run --rm tf -chdir=setup validate
           docker compose run --rm tf -chdir=deploy validate
