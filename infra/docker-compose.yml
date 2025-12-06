@@ -12,7 +12,12 @@ services:
       # The :- operator tells Compose: If the variable isn't set, use an empty string quietly.
       # hence, no warning like:
       # WARN[0000] The "TF_WORKSPACE" variable is not set. Defaulting to a blank string.
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-}
-      - AWS_DEFAULT_REGION=${AWS_REGION:-}
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_REGION
+      - TF_VAR_ecr_nginx_img_uri
+      - TF_VAR_ecr_api_img_uri
+      - TF_VAR_db_password
+      - TF_VAR_db_username
+      - TF_VAR_django_secret_key
       - TF_WORKSPACE=${TF_WORKSPACE:-}
