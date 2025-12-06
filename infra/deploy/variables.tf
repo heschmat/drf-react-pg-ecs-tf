@@ -1,17 +1,13 @@
 variable "project_name" {
   description = "Name of the project"
   type        = string
+  default     = "movies-api-ztm"
 }
 
 variable "aws_region" {
   description = "AWS region to deploy resources"
   type        = string
   default     = "us-east-1"
-}
-
-variable "state_bucket" {
-  description = "S3 bucket name used for storing Terraform state"
-  type        = string
 }
 
 variable "contact" {
@@ -21,16 +17,17 @@ variable "contact" {
 }
 
 variable "ecr_nginx_img_uri" {
-  default = "014571658325.dkr.ecr.us-east-1.amazonaws.com/movies-reviews-api-nginx:latest"
+  type        = string
+  description = "ecr repo uri for the proxy image"
 }
 
 variable "ecr_api_img_uri" {
-  default = "014571658325.dkr.ecr.us-east-1.amazonaws.com/movies-reviews-api-api:latest"
+  type        = string
+  description = "ecr repo uri for the api image"
 }
 
 variable "db_username" {
   description = "The username for the RDS database"
-  default     = "adminx"
 }
 
 variable "db_password" {

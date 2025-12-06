@@ -7,7 +7,7 @@ terraform {
   }
 
   backend "s3" {
-    bucket       = "movies-drf-api"
+    bucket       = "movies-api-ztm"
     key          = "setup-key"
     region       = "us-east-1"
     use_lockfile = true
