@@ -7,7 +7,7 @@ terraform {
   }
 
   backend "s3" {
-    bucket       = "movies-api-ztm"
+    bucket       = "movies-api-tf-state"
     key          = "setup-key"
     region       = "us-east-1"
     use_lockfile = true
@@ -26,8 +26,4 @@ provider "aws" {
       ManagedBy   = "terraform/setup"
     }
   }
-}
-
-locals {
-  prefix = var.project_name
 }

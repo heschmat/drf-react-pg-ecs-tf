@@ -1,19 +1,16 @@
 variable "project_name" {
   description = "Name of the project"
   type        = string
-  default     = "movies-api-ztm"
 }
 
 variable "aws_region" {
   description = "AWS region to deploy resources"
   type        = string
-  default     = "us-east-1"
 }
 
 variable "state_bucket" {
   description = "S3 bucket name used for storing Terraform state"
   type        = string
-  default     = "movies-api-ztm"
 }
 
 variable "contact" {

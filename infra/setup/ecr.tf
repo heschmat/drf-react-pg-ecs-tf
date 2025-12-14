@@ -1,5 +1,5 @@
 resource "aws_ecr_repository" "api" {
-  name                 = "${local.prefix}-api"
+  name                 = "${var.project_name}-backend"
   image_tag_mutability = "MUTABLE"
   # this allows Terraform to delete the repo even if images exist.
   # to save costs we want to run `terraform destroy` when developin/learning.
@@ -11,7 +11,7 @@ resource "aws_ecr_repository" "api" {
 }
 
 resource "aws_ecr_repository" "nginx" {
-  name                 = "${local.prefix}-nginx"
+  name                 = "${var.project_name}-nginx"
   image_tag_mutability = "MUTABLE"
   force_delete         = true
   image_scanning_configuration {
