@@ -52,6 +52,22 @@ module "networking" {
 
 }
 
+module "database" {
+  source = "./modules/database"
+
+  prefix = local.label
+
+  vpc_id          = module.networking.vpc_id
+  private_subnets = module.networking.private_subnet_ids
+
+  db_name     = var.db_name
+  db_username = var.db_username
+  db_password = var.db_password
+  allowed_sg_ids = [
+    module.networking.private_sg_id
+  ]
+}
+
 # ======================================================= #
 # local values to avoid repetition
 locals {
