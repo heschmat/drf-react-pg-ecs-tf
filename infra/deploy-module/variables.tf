@@ -5,3 +5,4 @@ variable "project_name" {
 variable "contact" {
   default = "admin.devops@keykocorp.ztm"
 }
+
