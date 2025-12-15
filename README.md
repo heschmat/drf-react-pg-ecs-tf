@@ -113,7 +113,7 @@ source load_tf_env.sh
 aws ecs list-tasks --cluster $CLUSTER_NAME --service-name $SERVICE_NAME
 
 # example `TASK_ID`
-TASK_ID=a5179159ed344e4a900d52af75e4e87d
+TASK_ID=787c7c674b4f499abdea2d9468905348
 
 # verify `execute-command` is enables
 aws ecs describe-tasks \
@@ -152,7 +152,7 @@ curl -X POST "${ALB_DNS_NAME}/api/user/token/" \
   -H "Content-Type: application/json" \
   -d '{
         "email": "bruno@keykocorp.ztm",
-        "password": "Berlin!!"
+        "password": "Berlin89"
       }'
 ```
 
@@ -270,3 +270,29 @@ aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-n
 Only healthy tasks serve traffic.
 
 ---
+
+## LB
+Here's a guideline to check why the LB is not responsive:
+
+### 503 Service Temporarily Unavailable
+
+ALB 503 means **no healthy targets**.
+When you hit the ALB DNS:
+- ALB checks the target group health.
+- If all targets are unhealthy, ALB returns 503 immediately.
+
+1) don't forget to register the `load_balancer` in ecs_service
+
+ALB routes traffic → listener decides where it goes → target group holds live task IPs → ECS service automatically registers/deregisters those IPs.
+
+Nothing talks directly to ECS tasks except the target group.
+
+## Destroy
+To save costs you can run the following commands to destroy terraform-created resources:
+
+```sh
+# pick your workspace where you've deployed your recourses into:
+export TF_WORKSPACE=staging
+docker compose run --rm tf -chdir=deploy workspace list # show
+docker compose run --rm tf -chdir=deploy destroy --auto-approve
+```

@@ -178,7 +178,11 @@ resource "aws_security_group" "ecs_task" {
     from_port = 2049
     to_port   = 2049
     protocol  = "tcp"
-    cidr_blocks = var.private_subnets_cidrs
+    # cidr_blocks = var.private_subnets_cidrs
+    cidr_blocks = [
+    "10.0.21.0/24",
+    "10.0.22.0/24",
+  ]
   }
 
   tags = {
