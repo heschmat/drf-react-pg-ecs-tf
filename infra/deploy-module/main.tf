@@ -77,10 +77,10 @@ module "ecs" {
 
   # private_subnets = module.networking.private_subnet_ids
   public_subnets = module.networking.public_subnet_ids
-  # allowed_sg_ids = [
-  #   # module.networking.private_sg_id
-  #   module.
-  # ]
+  allowed_sg_ids = [
+    # module.networking.private_sg_id
+    module.lb.alb_security_group_id
+  ]
 
   ecr_repo_uri_nginx = var.ecr_repo_uri_nginx
   ecr_repo_uri_api   = var.ecr_repo_uri_api
@@ -91,6 +91,16 @@ module "ecs" {
   db_password = module.database.db_password
 
   django_secret_key = var.django_secret_key
+
+  target_group_arn = module.lb.api_target_group_arn
+
+}
+
+module "lb" {
+  source = "./modules/lb"
+  prefix = local.label
+  vpc_id = module.networking.vpc_id
+  public_subnets = module.networking.public_subnet_ids
 
 }
 

@@ -21,9 +21,9 @@ variable "public_subnets" {
   type        = list(string)
 }
 
-# variable "allowed_sg_ids" {
-#   type = list(string)
-# }
+variable "allowed_sg_ids" {
+  type = list(string)
+}
 
 variable "app_port" {
   type    = number
@@ -58,5 +58,9 @@ variable "ecr_repo_uri_nginx" {
 }
 
 variable "ecr_repo_uri_api" {
+  type = string
+}
+
+variable "target_group_arn" {
   type = string
 }

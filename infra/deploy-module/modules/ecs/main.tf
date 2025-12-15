@@ -115,6 +115,12 @@ resource "aws_ecs_service" "api" {
     security_groups = [aws_security_group.ecs_task.id]
     # security_groups = var.allowed_sg_ids
   }
+
+  load_balancer {
+    target_group_arn = var.target_group_arn
+    container_name   = "api"
+    container_port   = var.app_port
+  }
 }
 
 # security group for ecs tasks ================= #
@@ -131,6 +137,7 @@ resource "aws_security_group" "ecs_task" {
     cidr_blocks = ["0.0.0.0/0"]
     # Better:
     # cidr_blocks = ["YOUR_IP/32"]
+    security_groups = var.allowed_sg_ids
   }
 
   # Postgres access
