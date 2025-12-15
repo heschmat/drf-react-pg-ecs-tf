@@ -64,8 +64,34 @@ module "database" {
   db_username = var.db_username
   db_password = var.db_password
   allowed_sg_ids = [
-    module.networking.private_sg_id
+    # module.networking.private_sg_id
+    module.ecs.ecs_task_sg_id
   ]
+}
+
+module "ecs" {
+  source     = "./modules/ecs"
+  prefix     = local.label
+  aws_region = data.aws_region.current.id
+  vpc_id     = module.networking.vpc_id
+
+  # private_subnets = module.networking.private_subnet_ids
+  public_subnets = module.networking.public_subnet_ids
+  # allowed_sg_ids = [
+  #   # module.networking.private_sg_id
+  #   module.
+  # ]
+
+  ecr_repo_uri_nginx = var.ecr_repo_uri_nginx
+  ecr_repo_uri_api   = var.ecr_repo_uri_api
+
+  db_host     = module.database.db_host
+  db_name     = module.database.db_name
+  db_user     = module.database.db_user
+  db_password = module.database.db_password
+
+  django_secret_key = var.django_secret_key
+
 }
 
 # ======================================================= #

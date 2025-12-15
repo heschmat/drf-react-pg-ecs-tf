@@ -23,4 +23,6 @@ services:
       - TF_VAR_db_password
       - TF_VAR_db_username
       - TF_VAR_django_secret_key
+      - TF_VAR_ecr_repo_uri_api
+      - TF_VAR_ecr_repo_uri_nginx
       - TF_WORKSPACE=${TF_WORKSPACE:-}

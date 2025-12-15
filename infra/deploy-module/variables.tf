@@ -19,3 +19,18 @@ variable "db_username" {
 variable "db_password" {
   sensitive = true
 }
+
+# ecs variables ============================ #
+
+variable "django_secret_key" {
+  sensitive = true
+}
+
+# ecr repo uris ======================= #
+variable "ecr_repo_uri_nginx" {
+  type = string
+}
+
+variable "ecr_repo_uri_api" {
+  type = string
+}
