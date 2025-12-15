@@ -11,7 +11,7 @@ variable "vpc_id" {
 }
 
 variable "ecs_cluster_name" {
-  type = string
+  type    = string
   default = "movies-ecs-cluster"
 }
 
@@ -19,6 +19,15 @@ variable "ecs_cluster_name" {
 variable "public_subnets" {
   description = "List of CIDR blocks for public subnets"
   type        = list(string)
+}
+
+# variable "private_subnets" {
+#   description = "List of CIDR blocks for private subnets"
+#   type        = list(string)
+# }
+
+variable "private_subnets_cidrs" {
+  
 }
 
 variable "allowed_sg_ids" {
@@ -32,7 +41,7 @@ variable "app_port" {
 
 
 variable "db_host" {
-    type = string
+  type = string
 }
 
 variable "db_name" {
@@ -49,7 +58,7 @@ variable "db_password" {
 }
 
 variable "django_secret_key" {
-  type = string
+  type      = string
   sensitive = true
 }
 
@@ -62,5 +71,14 @@ variable "ecr_repo_uri_api" {
 }
 
 variable "target_group_arn" {
+  type = string
+}
+
+# EFS variables for media file storage ==========
+variable "efs_file_system_id" {
+  type = string
+}
+
+variable "efs_access_point_id" {
   type = string
 }

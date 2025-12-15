@@ -4,7 +4,7 @@ locals {
       name      = "proxy"
       image     = var.ecr_repo_uri_nginx
       essential = true
-      user = "nginx"
+      user      = "nginx"
 
       # N.B. When `networkMode=awsvpc`,
       # the host ports and container ports in port mappings must match.
@@ -25,6 +25,11 @@ locals {
         {
           sourceVolume  = "static"
           containerPath = "/vol/static" # should match the values in `default.conf.tpl`
+          readOnly      = true
+        },
+        {
+          sourceVolume  = "efs-media"
+          containerPath = "/vol/media" # should match the values in `default.conf.tpl`
           readOnly      = true
         }
       ]
@@ -62,9 +67,14 @@ locals {
       mountPoints = [
         {
           sourceVolume  = "static"
-          containerPath = "/vol/web/static"
+          containerPath = "/vol/web/static" # STATIC_ROOT in Django settings
           readOnly      = false
         },
+        {
+          sourceVolume  = "efs-media"
+          containerPath = "/vol/web/media" # MEDIA_ROOT in Django settings
+          readOnly      = false
+        }
       ]
 
       logConfiguration = {
@@ -84,3 +94,9 @@ locals {
     local.container_definition_api,
   )
 }
+
+# locals {
+#   private_subnet_cidrs = [
+#     for id in var.private_subnets : id.cidr_block
+#   ]
+# }

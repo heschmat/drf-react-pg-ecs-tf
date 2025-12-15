@@ -13,3 +13,10 @@ output "public_subnet_ids" {
 output "private_sg_id" {
   value = aws_security_group.private.id
 }
+
+output "private_subnet_ids_map" {
+  value = {
+    for k, subnet in aws_subnet.private :
+    k => subnet.id
+  }
+}
