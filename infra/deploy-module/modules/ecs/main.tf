@@ -91,7 +91,7 @@ resource "aws_ecs_task_definition" "api" {
   volume {
     name = "efs-media"
     efs_volume_configuration {
-      file_system_id = var.efs_file_system_id
+      file_system_id     = var.efs_file_system_id
       transit_encryption = "ENABLED"
 
       authorization_config {
@@ -175,14 +175,10 @@ resource "aws_security_group" "ecs_task" {
   }
 
   egress {
-    from_port = 2049
-    to_port   = 2049
-    protocol  = "tcp"
-    # cidr_blocks = var.private_subnets_cidrs
-    cidr_blocks = [
-    "10.0.21.0/24",
-    "10.0.22.0/24",
-  ]
+    from_port   = 2049
+    to_port     = 2049
+    protocol    = "tcp"
+    cidr_blocks = var.private_subnets_cidrs
   }
 
   tags = {

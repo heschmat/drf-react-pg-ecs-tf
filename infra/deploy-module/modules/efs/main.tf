@@ -18,12 +18,12 @@ resource "aws_security_group" "efs" {
 
   # N.B. do NOT forget to allow NFS traffic from ECS tasks security group
   ingress {
-    description     = "Allow NFS traffic from ECS tasks"
-    from_port       = 2049
-    to_port         = 2049
-    protocol        = "tcp"
+    description = "Allow NFS traffic from ECS tasks"
+    from_port   = 2049
+    to_port     = 2049
+    protocol    = "tcp"
     security_groups = [
-        var.ecs_task_sg_id
+      var.ecs_task_sg_id
     ]
   }
 }
@@ -55,7 +55,7 @@ resource "aws_efs_access_point" "media" {
   root_directory {
     path = "/api/media"
     creation_info {
-        # the id matches those used in the Dockerfile for the app user
+      # the id matches those used in the Dockerfile for the app user
       owner_gid   = 1001
       owner_uid   = 1001
       permissions = "755"

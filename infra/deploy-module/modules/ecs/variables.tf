@@ -27,7 +27,7 @@ variable "public_subnets" {
 # }
 
 variable "private_subnets_cidrs" {
-  
+
 }
 
 variable "allowed_sg_ids" {

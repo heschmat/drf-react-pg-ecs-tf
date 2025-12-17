@@ -38,17 +38,11 @@ module "networking" {
 
   azs = data.aws_availability_zones.available.names
 
-  vpc_cidr = "10.0.0.0/16"
+  vpc_cidr = var.vpc_cidr
 
-  public_subnets = [
-    "10.0.11.0/24",
-    "10.0.12.0/24",
-  ]
+  public_subnets = var.public_subnet_cidrs
 
-  private_subnets = [
-    "10.0.21.0/24",
-    "10.0.22.0/24",
-  ]
+  private_subnets = var.private_subnet_cidrs
 
 }
 
@@ -76,8 +70,8 @@ module "ecs" {
   vpc_id     = module.networking.vpc_id
 
   # private_subnets = module.networking.private_subnet_ids
-  private_subnets_cidrs = module.networking.private_subnet_ids
-  public_subnets = module.networking.public_subnet_ids
+  private_subnets_cidrs = var.private_subnet_cidrs
+  public_subnets        = module.networking.public_subnet_ids
   allowed_sg_ids = [
     # module.networking.private_sg_id
     module.lb.alb_security_group_id
@@ -95,7 +89,7 @@ module "ecs" {
 
   target_group_arn = module.lb.api_target_group_arn
 
-  efs_file_system_id = module.efs.file_system_id
+  efs_file_system_id  = module.efs.file_system_id
   efs_access_point_id = module.efs.access_point_id
 }
 
@@ -108,11 +102,11 @@ module "lb" {
 }
 
 module "efs" {
-  source = "./modules/efs"
-  prefix = local.label
-  vpc_id          = module.networking.vpc_id
+  source             = "./modules/efs"
+  prefix             = local.label
+  vpc_id             = module.networking.vpc_id
   private_subnet_ids = module.networking.private_subnet_ids_map
-  ecs_task_sg_id = module.ecs.ecs_task_sg_id
+  ecs_task_sg_id     = module.ecs.ecs_task_sg_id
 
 }
 
