@@ -74,12 +74,13 @@ Below is a high-level description of how the Movies Reviews API is structured an
 Useful commands for logging into ECR, building/pushing/pulling images, and inspecting image metadata.
 
 ```sh
-aws ecr get-login-password --region us-east-1 \
-  | docker login --username AWS --password-stdin 014571658325.dkr.ecr.us-east-1.amazonaws.com
+aws ecr get-login-password --region $AWS_REGION \
+  | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com
 
 # REPLACE `ECR_REPO` with the correct value
+# e.g.,
 ECR_REPO=014571658325.dkr.ecr.us-east-1.amazonaws.com/movies-reviews-api-nginx # for proxy
-ECR_REPO=014571658325.dkr.ecr.us-east-1.amazonaws.com/movies-reviews-api-api # for api
+ECR_REPO=137423019814.dkr.ecr.us-east-1.amazonaws.com/movies-api-backend # for api
 
 # To build api image or proxy/image use the corresponding `docker build` command:
 docker build --no-cache -t img:latest -f Dockerfile.prod .
@@ -113,7 +114,7 @@ source load_tf_env.sh
 aws ecs list-tasks --cluster $CLUSTER_NAME --service-name $SERVICE_NAME
 
 # example `TASK_ID`
-TASK_ID=787c7c674b4f499abdea2d9468905348
+TASK_ID=8cac3f6a68df4646942a565524b360f8
 
 # verify `execute-command` is enables
 aws ecs describe-tasks \
@@ -129,6 +130,15 @@ aws ecs execute-command \
   --container api \
   --interactive \
   --command "/bin/sh"
+```
+
+Note, in case `SessionManagerPlugin is not found`:
+```sh
+curl -s https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb -o session-manager-plugin.deb
+sudo dpkg -i session-manager-plugin.deb
+
+session-manager-plugin --version
+
 ```
 
 ### Django management tasks
@@ -151,8 +161,8 @@ Useful for smoke‑testing the deployed environment.
 curl -X POST "${ALB_DNS_NAME}/api/user/token/" \
   -H "Content-Type: application/json" \
   -d '{
-        "email": "bruno@keykocorp.ztm",
-        "password": "Berlin89"
+        "email": "bruno@ztm.org",
+        "password": "Tokio123"
       }'
 ```
 
@@ -235,6 +245,18 @@ ls /vol/web/media/posters
 * Egress rules matter, especially for EFS NFS traffic
 
 ---
+
+## 💥 S3 & CloudFront
+
+I decided to use S3 & CloudFront in the project, and drop Nginx.
+
+This way client requests are routed through an Application Load Balancer (ALB), which forwards traffic to ECS services running the application with Gunicorn as the sole application server.
+
+Static and media assets are stored in Amazon S3 and distributed globally via CloudFront, providing caching and reduced latency. The application generates URLs for these assets, which are served directly from CloudFront rather than through the application containers.
+
+The application containers do not rely on shared file systems; the previous EFS and ECS task volume–based storage has been removed. This results in a simpler, more scalable, and more resilient architecture.
+
+Infrastructure provisioning and configuration for this setup is automated and can be deployed using `./infra/deploy-cf-s3`
 
 ## 🚢 Deployment Workflow
 
