@@ -135,14 +135,44 @@ USE_I18N = True
 USE_TZ = True
 
 
+# # Static files (CSS, JavaScript, Images)
+# # https://docs.djangoproject.com/en/5.2/howto/static-files/
+
+# STATIC_URL = "static/static/"
+# MEDIA_URL = "static/media/"
+
+# STATIC_ROOT = "/vol/web/static"  # collectstatic puts the files here
+# MEDIA_ROOT = "/vol/web/media"
+
+
+# v2 ================================================= #
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
+# v2 --------------------------------
+STATIC_URL = "/static/"
+MEDIA_URL = "/media/"
 
-STATIC_URL = "static/static/"
-MEDIA_URL = "static/media/"
+# AWS S3 Settings for static and media files
+AWS_STORAGE_BUCKET_NAME = os.environ["AWS_STORAGE_BUCKET_NAME"]
+AWS_S3_REGION_NAME = os.environ["AWS_S3_REGION_NAME"]
+AWS_DEFAULT_ACL = None
+AWS_QUERYSTRING_AUTH = False
 
-STATIC_ROOT = "/vol/web/static"  # collectstatic puts the files here
-MEDIA_ROOT = "/vol/web/media"
+AWS_S3_CUSTOM_DOMAIN = os.environ["CLOUDFRONT_DOMAIN"]
+
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+    },
+    "staticfiles": {
+        "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
+    },
+}
+
+STATIC_URL = f"https://{os.environ['CLOUDFRONT_DOMAIN']}/static/"
+MEDIA_URL  = f"https://{os.environ['CLOUDFRONT_DOMAIN']}/media/"
+
+# ================================================== #
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

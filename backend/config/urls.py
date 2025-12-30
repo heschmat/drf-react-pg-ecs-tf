@@ -18,15 +18,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
+from django.http import HttpResponse
 
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
-
-from core import views as core_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     # health check
-    path('api/healthz/', core_views.healthz),
+    path("healthz/", lambda r: JsonResponse({"status": "ok"})),
     # api doc:
     path('api/schema/', SpectacularAPIView.as_view(), name='api-schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='api-schema'), name='api-docs'),

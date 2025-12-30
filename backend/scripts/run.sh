@@ -13,6 +13,11 @@ python manage.py collectstatic --noinput
 echo "Applying migrations..."
 python manage.py migrate --noinput
 
+echo "Seeding genres..."
+# The || true ensures:
+# If two tasks start at once and one hits a race condition, it won't crash the container
+python manage.py seed_genres || true
+
 echo "Starting gunicorn..."
 # Use exec so gunicorn becomes PID 1 and stays running
 exec gunicorn --bind 0.0.0.0:9000 --workers 4 config.wsgi

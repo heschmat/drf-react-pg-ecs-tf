@@ -5,6 +5,7 @@ services:
       - ./setup:/tf-code/setup
       - ./deploy:/tf-code/deploy
       - ./deploy-module:/tf-code/deploy-module
+      - ./deploy-cf-s3:/tf-code/deploy-cf-s3
       # Mount your ~/.aws credentials
       - ~/.aws:/root/.aws:ro
       # - ~/.ssh:/root/.ssh:ro
